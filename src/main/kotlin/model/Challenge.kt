@@ -4,11 +4,10 @@ import kotlinx.serialization.Serializable
 import okhttp3.Challenge
 
 @Serializable
-class Message (
-    val token: String?,
-    val challenge: String?,
-    val type: String?,
-)
+class Challenge (
+    val token: String,
+    val challenge: String
+): Message()
 
 @Serializable
 class ChallengeResponse (
