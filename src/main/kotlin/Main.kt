@@ -35,17 +35,9 @@ fun Application.serverModule() {
 
                 val rawMessage = format.decodeFromString<JsonObject>(json)
 
-                var message: Event? = null
-
-                if (rawMessage["type"].toString() == "\"event_callback\"") {
-                    rawMessage["event"]?.let {
-                        message = format.decodeFromString(it.toString())
-                    } ?:run {
-                        throw Exception("Bad Specification")
-                    }
-                } else {
-                    message = format.decodeFromString(json)
-                }
+                val message: Event? = rawMessage["event"]?.let {
+                    format.decodeFromString(it.toString())
+                } ?: run { format.decodeFromString(json) }
 
                 val handler = message?.let { router.handler(call, slack, it) }
                 message?.parseMessage()?.let { handler?.handle(it) }
