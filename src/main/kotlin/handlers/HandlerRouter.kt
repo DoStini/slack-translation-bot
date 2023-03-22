@@ -1,13 +1,15 @@
 package handlers
 
+import com.slack.api.methods.MethodsClient
 import io.ktor.server.application.ApplicationCall
-import model.GeneralMessage
+import model.Event
 
 class HandlerRouter {
-    fun handler(call: ApplicationCall, message: GeneralMessage): Handler {
+    fun handler(call: ApplicationCall, slack: MethodsClient, message: Event): Handler {
         return when(message.type) {
-            "url_verification" -> ChallengeHandler(call)
-            else -> ChallengeHandler(call)
+            "url_verification" -> ChallengeHandler(call, slack)
+            "app_mention" -> MentionHandler(call, slack)
+            else -> ChallengeHandler(call, slack)
         }
     }
 }

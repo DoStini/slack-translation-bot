@@ -1,13 +1,17 @@
 package model
 
 import kotlinx.serialization.Serializable
-import okhttp3.Challenge
 
 @Serializable
 class Challenge (
     val token: String,
     val challenge: String
-): Message()
+): Message() {
+    constructor(message: Event) : this(
+        message.token!!,
+        message.challenge!!
+    )
+}
 
 @Serializable
 class ChallengeResponse (
