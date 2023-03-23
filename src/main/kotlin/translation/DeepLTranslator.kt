@@ -7,9 +7,14 @@ class DeepLTranslator (
 ) : ITranslator {
 
     private val translator = Translator(key)
+    private val languages = listOf(
+        Language("pt-PT", "Portuguese", "flag-pt"),
+        Language("en-GB", "English", "flag-england"),
+        Language("es", "Spanish", "es"),
+    )
 
-    override fun translate(language: Language, text: String): String {
-        val result = translator.translateText(text, null, language.value)
+    override fun translate(language: String, text: String): String {
+        val result = translator.translateText(text, null, language)
         return result.text
     }
 
@@ -18,10 +23,12 @@ class DeepLTranslator (
     }
 
     override fun languages(): List<Language> {
-        return listOf(
-            Language("pt-PT", "Portuguese", ":flag-pt:"),
-            Language("en-GB", "English", ":flag-england:"),
-            Language("es", "Spanish", ":es:"),
-        )
+        return languages
+    }
+
+    override fun languageByEmoji(reaction: String): Language? {
+        return languages.find {
+            it.emoji == reaction
+        }
     }
 }

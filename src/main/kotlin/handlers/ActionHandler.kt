@@ -1,7 +1,6 @@
 package handlers
 
 import botId
-import com.deepl.api.Translator
 import com.slack.api.methods.MethodsClient
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
@@ -11,7 +10,6 @@ import model.Message
 import org.koin.core.component.inject
 import storage.TranslationStorage
 import translation.ITranslator
-import translation.Language
 
 class ActionHandler(
     call: ApplicationCall,
@@ -35,13 +33,13 @@ class ActionHandler(
         val action = message.actions[0]
 
         val textToTranslate = original.replace("<@${botId}>", "")
-        val result = translator.translate(Language(action.value, "", ""), textToTranslate)
+        val result = translator.translate(action.value, textToTranslate)
 
         val response = slack.chatPostMessage {
             it
                 .channel(message.container.channelId)
                 .threadTs(message.message.ts)
-                .text("<@${message.user.id}> ${action.text.text}: $result ")
+                .text("<@${message.user.id}> ${action.text.text}: $result")
         }
 
         if (response.isOk) {

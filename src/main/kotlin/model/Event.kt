@@ -6,6 +6,13 @@ import kotlinx.serialization.Serializable
 open class Message
 
 @Serializable
+class Item (
+    val type: String,
+    val channel: String,
+    val ts: String
+)
+
+@Serializable
 open class Event (
     val token: String? = null,
     val challenge: String? = null,
@@ -17,11 +24,14 @@ open class Event (
     val event: Event? = null,
     @SerialName("event_ts")
     val eventTs: String? = null,
+    val reaction: String? = null,
+    val item: Item? = null
 ) {
     fun parseMessage(): Message? {
         return when(type) {
             "url_verification" -> Challenge(this)
             "app_mention" -> Mention(this)
+            "reaction_added" -> ReactionAdded(this)
             "event_callback" -> event?.parseMessage() ?: run { throw Error("Invalid Specification") }
             else -> null
         }
