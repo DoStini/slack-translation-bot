@@ -2,6 +2,7 @@ package handlers
 
 import com.slack.api.methods.MethodsClient
 import io.ktor.server.application.ApplicationCall
+import model.ActionWrapper
 import model.Message
 
 abstract class Handler(

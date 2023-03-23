@@ -15,9 +15,8 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
-import model.Action
+import model.ActionWrapper
 import model.Event
 
 val token: String = System.getenv("SLACK_TOKEN")
@@ -57,30 +56,10 @@ fun Application.serverModule() {
             try {
                 val json = call.receiveParameters()["payload"].toString()
 
-                val rawMessage = format.decodeFromString<JsonObject>(json)
-                val rawActions = rawMessage["actions"] as JsonArray
-                val userId = format.decodeFromString<String>(format.decodeFromString<JsonObject>(rawMessage["user"].toString())["id"].toString())
-
-                val rawBotMessage = format.decodeFromString<JsonObject>(rawMessage["message"].toString())
-                val botMessageId = format.decodeFromString<String>(rawBotMessage["ts"].toString())
-
-                val rawContainer = format.decodeFromString<JsonObject>(rawMessage["container"].toString())
-                val channelId = format.decodeFromString<String>(rawContainer["channel_id"].toString())
-
-
-                val actions: List<Action> = rawActions.let {
-                    it.map { rawAction ->
-                        val action = format.decodeFromString<Action>(rawAction.toString())
-                        action.userId = userId
-                        action.messageTs = botMessageId
-                        action.channelId = channelId
-                        action
-                    }
-                }
-
+                val actions = format.decodeFromString<ActionWrapper>(json)
                 val handler = ActionHandler(call, slack, pendingTranslations)
 
-                actions.forEach { handler.handle(it) }
+                handler.handle(actions)
             } catch (err: Exception) {
                 println(err)
             }
