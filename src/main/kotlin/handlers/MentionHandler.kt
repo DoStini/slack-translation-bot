@@ -18,7 +18,7 @@ class MentionHandler(call: ApplicationCall, slack: MethodsClient, pendingTransla
                 .channel(message.channel)
                 .blocks {
                     section {
-                        markdownText("Select a language")
+                        markdownText("<@${message.user}> Select a language")
                     }
                     divider()
                     actions {
@@ -33,7 +33,6 @@ class MentionHandler(call: ApplicationCall, slack: MethodsClient, pendingTransla
                     }
                 }
                 .threadTs(message.ts)
-                .text("Replying!")
         }
 
         if (response.isOk) {

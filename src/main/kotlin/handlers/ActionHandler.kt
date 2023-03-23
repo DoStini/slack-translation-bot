@@ -32,6 +32,12 @@ class ActionHandler(call: ApplicationCall, slack: MethodsClient, pendingTranslat
         if (response.isOk) {
             call.respond(HttpStatusCode.OK)
             pendingTranslations.remove(message.messageTs.toString())
+
+            slack.chatDelete {
+                it
+                    .channel(message.channelId)
+                    .ts(message.messageTs)
+            }
         } else {
             call.respond(HttpStatusCode.InternalServerError)
         }
