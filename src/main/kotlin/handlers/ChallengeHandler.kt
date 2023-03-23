@@ -8,7 +8,7 @@ import model.Challenge
 import model.ChallengeResponse
 import model.Message
 
-class ChallengeHandler(call: ApplicationCall, slack: MethodsClient, pendingTranslations: HashMap<String, String>) : Handler(call, slack, pendingTranslations) {
+class ChallengeHandler(call: ApplicationCall, slack: MethodsClient) : Handler(call, slack) {
     override suspend fun handle(msg: Message) {
         val message = msg as Challenge
 

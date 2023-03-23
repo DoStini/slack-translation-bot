@@ -9,23 +9,23 @@ import io.ktor.server.response.respond
 import model.ActionWrapper
 import model.Message
 import org.koin.core.component.inject
+import storage.TranslationStorage
 import translation.ITranslator
 import translation.Language
 
 class ActionHandler(
     call: ApplicationCall,
     slack: MethodsClient,
-    pendingTranslations: HashMap<String, String>,
     ) : Handler(
     call,
     slack,
-    pendingTranslations,
 )   {
     private val translator by inject<ITranslator>()
+    private val storage by inject<TranslationStorage>()
 
     override suspend fun handle(msg: Message) {
         val message = msg as ActionWrapper
-        val original = pendingTranslations[message.message.ts.toString()]
+        val original = storage.get(message.message.ts)
 
         if (original == null) {
             call.respond(HttpStatusCode.InternalServerError)
@@ -46,7 +46,7 @@ class ActionHandler(
 
         if (response.isOk) {
             call.respond(HttpStatusCode.OK)
-            pendingTranslations.remove(message.message.ts.toString())
+            storage.remove(message.message.ts)
 
             slack.chatDelete {
                 it

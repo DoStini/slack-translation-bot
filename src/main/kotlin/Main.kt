@@ -23,6 +23,8 @@ import model.Event
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
+import storage.TranslationStorage
+import storage.VolatileTranslationStorage
 import translation.DeepLTranslator
 import translation.ITranslator
 
@@ -44,17 +46,18 @@ val koinModule = module {
     single<ITranslator> {
         DeepLTranslator(deepLToken)
     }
+    single<TranslationStorage> {
+        VolatileTranslationStorage()
+    }
 }
 
 fun Application.serverModule() {
-    val pendingTranslations = HashMap<String, String>()
-
     routing {
         post("/") {
             try {
                 val message = call.receive<Event>()
 
-                val handler = message.let { router.handler(call, slack, it, pendingTranslations) }
+                val handler = message.let { router.handler(call, slack, it) }
                 message.parseMessage()?.let { handler.handle(it) }
             } catch (err: Exception) {
                 println(err)
@@ -65,7 +68,7 @@ fun Application.serverModule() {
                 val json = call.receiveParameters()["payload"].toString()
 
                 val actions = format.decodeFromString<ActionWrapper>(json)
-                val handler = ActionHandler(call, slack, pendingTranslations)
+                val handler = ActionHandler(call, slack)
 
                 handler.handle(actions)
             } catch (err: Exception) {
