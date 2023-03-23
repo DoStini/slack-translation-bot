@@ -15,6 +15,6 @@ class Mention (
         message.text!!,
         message.ts!!,
         message.channel!!,
-        message.event_ts!!
+        message.eventTs!!
     )
 }

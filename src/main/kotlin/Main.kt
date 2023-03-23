@@ -9,6 +9,7 @@ import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.request.receive
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.request.receiveText
 import io.ktor.server.routing.post
@@ -38,16 +39,10 @@ fun Application.serverModule() {
     routing {
         post("/") {
             try {
-                val json = call.receiveText()
+                val message = call.receive<Event>()
 
-                val rawMessage = format.decodeFromString<JsonObject>(json)
-
-                val message: Event? = rawMessage["event"]?.let {
-                    format.decodeFromString(it.toString())
-                } ?: run { format.decodeFromString(json) }
-
-                val handler = message?.let { router.handler(call, slack, it, pendingTranslations) }
-                message?.parseMessage()?.let { handler?.handle(it) }
+                val handler = message.let { router.handler(call, slack, it, pendingTranslations) }
+                message.parseMessage()?.let { handler.handle(it) }
             } catch (err: Exception) {
                 println(err)
             }
