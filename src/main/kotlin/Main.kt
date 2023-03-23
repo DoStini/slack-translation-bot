@@ -4,6 +4,7 @@ import com.slack.api.methods.MethodsClient
 import handlers.ActionHandler
 import handlers.HandlerRouter
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.*
 import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -19,8 +20,14 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import model.ActionWrapper
 import model.Event
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+import org.koin.ktor.plugin.Koin
+import translation.DeepLTranslator
+import translation.ITranslator
 
 val token: String = System.getenv("SLACK_TOKEN")
+val deepLToken: String = System.getenv("DEEPL_TOKEN")
 private val slack: MethodsClient = Slack.getInstance().methods(token)
 val router: HandlerRouter = HandlerRouter()
 val botId = slack.authTest {
@@ -33,9 +40,15 @@ fun main() {
     embeddedServer(Netty, port = 8000, module = Application::serverModule).start(wait = true)
 }
 
+val koinModule = module {
+    single<ITranslator> {
+        DeepLTranslator(deepLToken)
+    }
+}
 
 fun Application.serverModule() {
     val pendingTranslations = HashMap<String, String>()
+
     routing {
         post("/") {
             try {
@@ -62,5 +75,8 @@ fun Application.serverModule() {
     }
     install(ContentNegotiation) {
         json(json = format)
+    }
+    install(Koin) {
+        modules(koinModule)
     }
 }

@@ -24,6 +24,9 @@ dependencies {
     implementation ("io.ktor:ktor-server-default-headers:2.2.4")
     implementation("io.ktor:ktor-server-content-negotiation:2.2.4")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
+    implementation("com.deepl.api:deepl-java:1.1.0")
+    implementation("io.insert-koin:koin-ktor:3.3.1")
+    implementation("io.insert-koin:koin-logger-slf4j:3.3.1")
 }
 
 tasks.test {

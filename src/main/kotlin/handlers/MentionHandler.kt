@@ -8,9 +8,14 @@ import io.ktor.server.response.respond
 import model.ActionWrapper
 import model.Mention
 import model.Message
+import org.koin.core.component.inject
+import translation.ITranslator
 
 class MentionHandler(call: ApplicationCall, slack: MethodsClient, pendingTranslations: HashMap<String, String>) :
     Handler(call, slack, pendingTranslations) {
+
+    private val translator by inject<ITranslator>()
+
     override suspend fun handle(msg: Message) {
         val message = msg as Mention
 
@@ -23,13 +28,11 @@ class MentionHandler(call: ApplicationCall, slack: MethodsClient, pendingTransla
                     }
                     divider()
                     actions {
-                        button {
-                            text(":flag-pt:", emoji = true)
-                            value("pt")
-                        }
-                        button {
-                            text(":flag-england:", emoji = true)
-                            value("en")
+                        translator.languages().forEach {
+                            button {
+                                text(it.emoji, emoji = true)
+                                value(it.value)
+                            }
                         }
                     }
                 }
