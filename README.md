@@ -9,6 +9,7 @@ The bot replies with a translation whenever a user reacts to a message with a fl
 - Portuguese :flag-pt:
 - Spanish :es:
 - English :flag-england:
+- German :de:
 
 This translation is sent as an ephemeral message only visible to the user which requested the translation.
 
