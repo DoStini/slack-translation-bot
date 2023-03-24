@@ -11,6 +11,7 @@ class DeepLTranslator (
         Language("pt-PT", "Portuguese", "flag-pt"),
         Language("en-GB", "English", "flag-england"),
         Language("es", "Spanish", "es"),
+        Language("de", "German", "de"),
     )
 
     override fun translate(language: String, text: String): String {
