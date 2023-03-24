@@ -31,7 +31,7 @@ class MentionHandler(call: ApplicationCall, slack: MethodsClient) :
                     actions {
                         translator.languages().forEach {
                             button {
-                                text(it.emoji, emoji = true)
+                                text(":${it.emoji}:", emoji = true)
                                 value(it.value)
                             }
                         }

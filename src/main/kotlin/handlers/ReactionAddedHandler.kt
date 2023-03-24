@@ -21,22 +21,29 @@ class ReactionAddedHandler(call: ApplicationCall, slack: MethodsClient): Handler
             call.respond(HttpStatusCode.OK)
             return
         }
-
-        val text = slack.conversationsHistory {
+        var retrieved = slack.conversationsHistory {
             it
                 .channel(message.channelId)
                 .latest(message.ts)
                 .inclusive(true)
                 .limit(1)
-        }.messages[0].text
+        }.messages[0]
 
-        val result = translator.translate(target.value, text)
+        if (retrieved.threadTs != null) {
+            retrieved = slack.conversationsReplies {
+                it
+                    .channel(message.channelId)
+                    .ts(message.ts)
+            }.messages[0]
+        }
+
+        val result = translator.translate(target.value, retrieved.text)
 
         val response = slack.chatPostEphemeral {
             it
                 .user(message.user)
                 .channel(message.channelId)
-                .threadTs(message.ts)
+                .threadTs(retrieved.threadTs)
                 .text("<@${message.user}> :${target.emoji}: $result")
         }
 

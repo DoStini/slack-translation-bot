@@ -7,9 +7,9 @@ open class Message
 
 @Serializable
 class Item (
-    val type: String,
-    val channel: String,
-    val ts: String
+    val type: String?,
+    val channel: String?,
+    val ts: String?
 )
 
 @Serializable
